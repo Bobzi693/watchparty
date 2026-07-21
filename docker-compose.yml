@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  watchparty:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - watchparty-data:/app/server/data
+    restart: unless-stopped
+
+volumes:
+  watchparty-data:

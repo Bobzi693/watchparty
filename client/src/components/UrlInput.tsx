@@ -5,7 +5,7 @@ interface Props {
   currentUrl?: string;
 }
 
-export function UrlInput({ onLoad, currentUrl }: Props) {
+export function UrlInput({ onLoad }: Props) {
   const [url, setUrl] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -9,7 +9,7 @@ import { initDatabase } from './storage';
 import { setupSocketHandlers } from './socket';
 import { getRoom } from './rooms';
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
 const app = express();
 app.use(cors());
@@ -45,7 +45,7 @@ function getLocalIP(): string {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name] || []) {
-      if (iface.family === 'IPv4' && !iface.internal) {
+      if (String(iface.family) === 'IPv4' && !iface.internal) {
         return iface.address;
       }
     }

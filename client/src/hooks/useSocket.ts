@@ -24,7 +24,7 @@ export function useSocket() {
 
     socket.on('disconnect', (reason) => {
       setConnected(false);
-      if (reason !== 'client namespace disconnect') {
+      if (reason !== 'io client disconnect') {
         setError('Соединение потеряно');
       }
     });

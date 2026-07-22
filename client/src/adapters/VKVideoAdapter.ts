@@ -13,13 +13,10 @@ export class VKVideoAdapter implements PlayerAdapter {
   private player: any = null;
   private onStateChange: ((state: 'playing' | 'paused' | 'ended' | 'buffering') => void) | null = null;
   private onTimeUpdate: ((time: number) => void) | null = null;
-  private currentVideoId: string | null = null;
-  private ready = false;
   private timeInterval: any = null;
 
   loadVideo(element: HTMLElement, videoId: string, onReady: () => void): void {
     this.container = element;
-    this.currentVideoId = videoId;
     this.container.innerHTML = '';
 
     const [oid, id] = videoId.split('_');
@@ -53,7 +50,6 @@ export class VKVideoAdapter implements PlayerAdapter {
         if (this.player) {
           clearInterval(checkLoaded);
           this.player.on('inited', () => {
-            this.ready = true;
             onReady();
           });
           this.player.on('paused', () => this.onStateChange?.('paused'));
@@ -85,7 +81,6 @@ export class VKVideoAdapter implements PlayerAdapter {
     if (this.container) this.container.innerHTML = '';
     this.iframe = null;
     this.player = null;
-    this.ready = false;
   }
 
   setStateChangeHandler(handler: (state: 'playing' | 'paused' | 'ended' | 'buffering') => void): void {

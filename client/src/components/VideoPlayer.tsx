@@ -9,18 +9,15 @@ interface Props {
   currentTime: number;
   onPlay: (time: number) => void;
   onPause: (time: number) => void;
-  onSeek: (time: number) => void;
   onReady: () => void;
-  onLocalAction: (action: any) => void;
 }
 
 export function VideoPlayer({
   platform, videoId, isPlaying, currentTime,
-  onPlay, onPause, onSeek, onReady, onLocalAction,
+  onPlay, onPause, onReady,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const adapterRef = useRef<PlayerAdapter | null>(null);
-  const isLocalAction = useRef(false);
   const lastTime = useRef(0);
   const ignoreNext = useRef(false);
 

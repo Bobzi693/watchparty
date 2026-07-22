@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Socket } from 'socket.io-client';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { UrlInput } from '../components/UrlInput';
@@ -29,7 +29,6 @@ export function Room({ socket, roomId, userId, onLeave }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [copied, setCopied] = useState(false);
-  const isLocalAction = useRef(false);
 
   useEffect(() => {
     socket.on('room_joined', (data: RoomData) => {
@@ -105,21 +104,13 @@ export function Room({ socket, roomId, userId, onLeave }: Props) {
   }, [socket]);
 
   const handlePlay = useCallback((time: number) => {
-    isLocalAction.current = true;
     setIsPlaying(true);
     socket.emit('video_action', { type: 'play', time });
   }, [socket]);
 
   const handlePause = useCallback((time: number) => {
-    isLocalAction.current = true;
     setIsPlaying(false);
     socket.emit('video_action', { type: 'pause', time });
-  }, [socket]);
-
-  const handleSeek = useCallback((time: number) => {
-    isLocalAction.current = true;
-    setCurrentTime(time);
-    socket.emit('video_action', { type: 'seek', time });
   }, [socket]);
 
   const handleSendMessage = useCallback((text: string) => {
@@ -175,9 +166,7 @@ export function Room({ socket, roomId, userId, onLeave }: Props) {
                 currentTime={currentTime}
                 onPlay={handlePlay}
                 onPause={handlePause}
-                onSeek={handleSeek}
                 onReady={() => socket.emit('request_sync')}
-                onLocalAction={() => {}}
               />
             ) : (
               <div className="flex items-center justify-center h-full text-[var(--text-muted)]">

@@ -6,13 +6,10 @@ export class RutubeAdapter implements PlayerAdapter {
   private container: HTMLElement | null = null;
   private onStateChange: ((state: 'playing' | 'paused' | 'ended' | 'buffering') => void) | null = null;
   private onTimeUpdate: ((time: number) => void) | null = null;
-  private currentVideoId: string | null = null;
-  private ready = false;
   private timeInterval: any = null;
 
   loadVideo(element: HTMLElement, videoId: string, onReady: () => void): void {
     this.container = element;
-    this.currentVideoId = videoId;
     this.container.innerHTML = '';
 
     this.iframe = document.createElement('iframe');
@@ -28,7 +25,6 @@ export class RutubeAdapter implements PlayerAdapter {
       try {
         const msg = JSON.parse(event.data);
         if (msg.type === 'player:ready') {
-          this.ready = true;
           onReady();
         }
         if (msg.type === 'player:changeState') {
@@ -69,7 +65,6 @@ export class RutubeAdapter implements PlayerAdapter {
       this.container.innerHTML = '';
     }
     this.iframe = null;
-    this.ready = false;
   }
 
   setStateChangeHandler(handler: (state: 'playing' | 'paused' | 'ended' | 'buffering') => void): void {

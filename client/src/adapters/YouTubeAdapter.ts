@@ -14,12 +14,9 @@ export class YouTubeAdapter implements PlayerAdapter {
   private onStateChange: ((state: 'playing' | 'paused' | 'ended' | 'buffering') => void) | null = null;
   private onTimeUpdate: ((time: number) => void) | null = null;
   private loaded = false;
-  private pendingVideoId: string | null = null;
 
   loadVideo(element: HTMLElement, videoId: string, onReady: () => void): void {
     this.container = element;
-    this.pendingVideoId = videoId;
-
     if (!window.YT) {
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';

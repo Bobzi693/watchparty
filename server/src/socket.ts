@@ -6,37 +6,38 @@ export function setupSocketHandlers(io: Server): void {
   io.on('connection', (socket: Socket) => {
     let currentRoomId: string | null = null;
 
-    socket.on('create_room', ({ name, userName }) => {
+    socket.on('create_room', ({ name, userName }, ack) => {
       const room = rooms.createRoom(name, userName);
       socket.join(room.id);
       currentRoomId = room.id;
 
       socket.data.userId = room.users[0].id;
       socket.data.userName = userName;
-      socket.emit('room_joined', room);
+
+      if (typeof ack === 'function') ack(null, room);
+      else socket.emit('room_joined', room);
     });
 
-    socket.on('join_room', ({ roomId, userName }) => {
+    socket.on('join_room', ({ roomId, userName }, ack) => {
       const result = rooms.joinRoom(roomId, userName);
       if (!result) {
-        socket.emit('room_error', 'Комната не найдена');
+        const msg = 'Комната не найдена';
+        if (typeof ack === 'function') ack(msg);
+        else socket.emit('room_error', msg);
         return;
       }
 
       const { room, userId } = result;
 
-      for (const [id, sock] of io.sockets.sockets) {
-        if (sock.rooms.has(roomId) && id !== socket.id) {
-          sock.emit('user_joined', { id: userId, name: userName, isAdmin: false });
-        }
-      }
+      socket.to(roomId).emit('user_joined', { id: userId, name: userName, isAdmin: false });
 
       socket.join(roomId);
       currentRoomId = roomId;
       socket.data.userId = userId;
       socket.data.userName = userName;
 
-      socket.emit('room_joined', room);
+      if (typeof ack === 'function') ack(null, room);
+      else socket.emit('room_joined', room);
     });
 
     socket.on('leave_room', () => {
@@ -52,10 +53,10 @@ export function setupSocketHandlers(io: Server): void {
       const userId = socket.data.userId;
       const user = rooms.leaveRoom(currentRoomId, userId);
       if (user) {
-        io.to(currentRoomId).emit('user_left', user.id);
+        socket.to(currentRoomId).emit('user_left', user.id);
         const room = rooms.getRoom(currentRoomId);
         if (room) {
-          io.to(currentRoomId).emit('users_list', room.users);
+          socket.to(currentRoomId).emit('users_list', room.users);
         }
       }
       currentRoomId = null;
@@ -87,11 +88,10 @@ export function setupSocketHandlers(io: Server): void {
         } else if (action.type === 'seek') {
           stateUpdate.currentTime = action.time;
         }
-
         Object.assign(room.currentVideo, stateUpdate);
       }
 
-      socket.to(currentRoomId!).emit('video_sync', {
+      socket.to(currentRoomId).emit('video_sync', {
         ...action,
         timestamp: Date.now(),
       });
@@ -111,7 +111,7 @@ export function setupSocketHandlers(io: Server): void {
       const userName = socket.data.userName;
       const msg = rooms.addMessage(currentRoomId, userId, userName, text.trim());
       if (msg) {
-        io.to(currentRoomId).emit('chat_message', msg);
+        socket.to(currentRoomId).emit('chat_message', msg);
       }
     });
   });

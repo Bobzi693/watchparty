@@ -15,7 +15,7 @@ export function setupSocketHandlers(io: Server): void {
       socket.data.userName = userName;
 
       if (typeof ack === 'function') ack(null, room);
-      else socket.emit('room_joined', room);
+      socket.emit('room_joined', room);
     });
 
     socket.on('join_room', ({ roomId, userName }, ack) => {
@@ -37,7 +37,7 @@ export function setupSocketHandlers(io: Server): void {
       socket.data.userName = userName;
 
       if (typeof ack === 'function') ack(null, room);
-      else socket.emit('room_joined', room);
+      socket.emit('room_joined', room);
     });
 
     socket.on('leave_room', () => {

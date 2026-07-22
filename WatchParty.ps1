@@ -55,11 +55,11 @@ $startBtn.Add_Click({
     }
     
     Start-Sleep -Seconds 3
-    $urlLabel.Text = "Запускаю туннель (pinggy)..."
-    $logBox.AppendText("Подключаюсь к pinggy.io через SSH...`n")
+    $urlLabel.Text = "Запускаю туннель..."
+    $logBox.AppendText("Подключаюсь к serveo.net через SSH...`n")
     
     $script:tunnelJob = Start-Job -ScriptBlock {
-        ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -p 443 -R 0:localhost:3001 ap@pinggy.io 2>&1
+        ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -R 80:localhost:3001 serveo.net 2>&1
     }
     
     Start-Sleep -Seconds 2
@@ -134,7 +134,7 @@ $timer.Add_Tick({
             $logBox.AppendText("$line`n")
             if ($line -match "https?://[a-zA-Z0-9.-]+(:\d+)?") {
                 $url = $matches[0]
-                if ($url -match "pinggy\.io|pinggy\.link|loca\.lt|trycloudflare\.com") {
+                if ($url -match "pinggy\.io|pinggy\.link|loca\.lt|trycloudflare\.com|serveo\.net") {
                     $script:tunnelUrl = $url
                     $urlLabel.Text = "ССЫЛКА: $url"
                     $urlLabel.ForeColor = [Drawing.Color]::Lime

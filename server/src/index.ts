@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 const httpServer = createServer(app);
+
 const io = new Server(httpServer, {
   cors: { origin: '*', methods: ['GET', 'POST'], credentials: true },
   transports: ['polling'],
